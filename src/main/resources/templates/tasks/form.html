@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Task Form')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: sidebar}"></nav>
+
+    <div class="main-content">
+        <div th:replace="~{fragments/layout :: topbar(${task.id != null} ? 'Edit Task' : 'Create Task')}"></div>
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="card">
+            <div class="card-body p-4">
+                <form th:action="${task.id != null} ? @{/tasks/{id}(id=${task.id})} : @{/tasks}"
+                      th:object="${task}" method="post">
+
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" th:field="*{title}"
+                                   placeholder="Enter task title" required>
+                            <div th:if="${#fields.hasErrors('title')}" class="text-danger small" th:errors="*{title}"></div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Due Date</label>
+                            <input type="date" class="form-control" th:field="*{dueDate}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" th:field="*{description}" rows="4"
+                                  placeholder="Enter task description"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" th:field="*{status}">
+                                <option th:each="status : ${statuses}" th:value="${status}" th:text="${status}">Status</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" th:field="*{priority}">
+                                <option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}">Priority</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Assign To</label>
+                            <select class="form-select" name="assignedToId">
+                                <option value="">-- Assign to me --</option>
+                                <option th:each="user : ${users}"
+                                        th:value="${user.id}"
+                                        th:text="${user.firstName + ' ' + user.lastName}"
+                                        th:selected="${task.assignedTo != null && task.assignedTo.id == user.id}">User</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-gradient">
+                            <i class="fas fa-save me-2"></i>
+                            <span th:text="${task.id != null} ? 'Update Task' : 'Create Task'">Save</span>
+                        </button>
+                        <a th:href="@{/tasks}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
